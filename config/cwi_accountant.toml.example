@@ -1,0 +1,28 @@
+[paths]
+docs_root = "./sample_docs"
+workbook_path = "./sample_docs/CWI_Expense_Tracker.xlsx"
+sqlite_path = "./data/state.db"
+logs_dir = "./logs"
+reports_dir = "./reports"
+backups_dir = "./backups"
+
+auto_create_categories = false
+low_confidence_threshold = 0.75
+auto_post_enabled = false
+auto_post_threshold = 0.95
+auto_post_min_critical_confidence = 0.90
+auto_post_blocked_categories = []
+trusted_vendors_for_bulk_approve = []
+auto_post_vendor_category_policies = []
+
+# Example strict vendor/category policy:
+# [[auto_post_vendor_category_policies]]
+# vendor = "OpenAI"
+# allowed_categories = ["Software / SaaS"]
+# min_overall_confidence = 0.98
+# min_critical_confidence = 0.95
+# max_amount = "500.00"
+# require_receipt_link = true
+# require_payment_method = true
+# require_business_purpose = true
+# require_tax_deductible_explicit = true

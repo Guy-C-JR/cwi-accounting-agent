@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CWI Accounting Agent | Guy Giordano Jr</title>
+  <meta name="description" content="Local-first accounting automation with human review, confidence scoring, workbook-safe Excel writeback, and audit trails.">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #111111;
+      --paper: #f7f8f5;
+      --white: #ffffff;
+      --line: #d8ddd8;
+      --teal: #128577;
+      --red: #b6323e;
+      --muted: #5a625f;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 17px;
+      line-height: 1.55;
+      letter-spacing: 0;
+      color: var(--ink);
+      background: var(--paper);
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .hero {
+      position: relative;
+      min-height: 78svh;
+      display: flex;
+      align-items: center;
+      background-image: url("assets/evidence-companion.png");
+      background-size: cover;
+      background-position: center;
+      color: var(--white);
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.68);
+    }
+
+    .hero-content {
+      position: relative;
+      width: min(780px, calc(100% - 40px));
+      margin-left: max(24px, 8vw);
+      padding: 88px 0;
+    }
+
+    .eyebrow {
+      margin: 0 0 18px;
+      color: #d9fff8;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 22px;
+      font-size: 4rem;
+      line-height: 0.98;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 690px;
+      margin-bottom: 30px;
+      font-size: 1.25rem;
+      color: #f1f4ef;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      padding: 10px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.82);
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 700;
+      transition: transform 160ms ease, background 160ms ease, color 160ms ease;
+    }
+
+    .button.primary {
+      background: var(--white);
+      color: var(--ink);
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      background: var(--teal);
+      color: var(--white);
+      border-color: var(--teal);
+    }
+
+    section {
+      padding: 72px max(24px, 7vw);
+    }
+
+    .section-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+    }
+
+    .kicker {
+      color: var(--red);
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      max-width: 850px;
+      font-size: 2.3rem;
+      line-height: 1.08;
+      letter-spacing: 0;
+      margin-bottom: 24px;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+      gap: 48px;
+      align-items: start;
+    }
+
+    .metrics {
+      display: grid;
+      gap: 14px;
+    }
+
+    .metric {
+      border-left: 5px solid var(--teal);
+      padding: 4px 0 4px 18px;
+      background: var(--white);
+      border-radius: 0 8px 8px 0;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 1.5rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 28px;
+    }
+
+    .tile {
+      min-height: 230px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--white);
+      transition: transform 160ms ease, border-color 160ms ease;
+    }
+
+    .tile:hover {
+      transform: translateY(-4px);
+      border-color: var(--teal);
+    }
+
+    .tile h3 {
+      margin-bottom: 12px;
+      font-size: 1.25rem;
+    }
+
+    .band {
+      background: var(--white);
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .evidence-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px 28px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .evidence-list li {
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    code {
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 0.95em;
+      color: var(--red);
+    }
+
+    .final {
+      background: #111111;
+      color: var(--white);
+    }
+
+    .final p {
+      color: #edf2ee;
+    }
+
+    @media (max-width: 900px) {
+      h1 {
+        font-size: 3rem;
+      }
+
+      .lead {
+        font-size: 1.1rem;
+      }
+
+      .split,
+      .grid,
+      .evidence-list {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 520px) {
+      body {
+        font-size: 16px;
+      }
+
+      h1 {
+        font-size: 2.25rem;
+      }
+
+      h2 {
+        font-size: 1.85rem;
+      }
+
+      .hero-content {
+        width: calc(100% - 32px);
+        margin-left: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="hero">
+      <div class="hero-content">
+        <p class="eyebrow">Guy Giordano Jr | Python Automation</p>
+        <h1>CWI Accounting Agent</h1>
+        <p class="lead">Local-first accounting automation with confidence-gated extraction, human review, safe Excel writeback, duplicate detection, recurring-bill review, and audit reports.</p>
+        <div class="actions">
+          <a class="button primary" href="https://github.com/Guy-C-JR/cwi-accounting-agent">View GitHub Repository</a>
+          <a class="button" href="mailto:guy.c.giordano@gmail.com">Contact Guy</a>
+        </div>
+      </div>
+    </header>
+
+    <section>
+      <div class="section-inner split">
+        <div>
+          <p class="kicker">Skill Signal</p>
+          <h2>Accounting automation built around controls, not blind posting.</h2>
+          <p>The agent turns documents into reviewable expense candidates, stores state in SQLite, preserves workbook formulas, and routes risky records to a Streamlit review cockpit.</p>
+          <p>The strongest engineering choice is restraint: every high-risk write is backed up, auditable, duplicate-checked, and gated by explicit policy.</p>
+        </div>
+        <div class="metrics">
+          <div class="metric"><strong>10+</strong>pytest files covering extraction, queueing, duplicate logic, config, writeback, and policy gates</div>
+          <div class="metric"><strong>7</strong>review cockpit areas across queue, document, duplicate, vendor, recurring, audit, and reports</div>
+          <div class="metric"><strong>0</strong>blind workbook overwrites by design</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="section-inner">
+        <p class="kicker">System Work</p>
+        <h2>End-to-end bookkeeping review, with human judgment kept in the loop.</h2>
+        <div class="grid">
+          <article class="tile">
+            <h3>Document intake</h3>
+            <p>Backlog scans, watch mode, parsing heuristics, confidence scoring, idempotent file handling, and queue creation.</p>
+          </article>
+          <article class="tile">
+            <h3>Workbook safety</h3>
+            <p>openpyxl writes with timestamped backups, formula/style preservation, canonical list checks, and duplicate guards.</p>
+          </article>
+          <article class="tile">
+            <h3>Operations cockpit</h3>
+            <p>Streamlit review flows for edits, approvals, duplicate resolution, vendor merges, recurring bills, audit trails, and reports.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-inner">
+        <p class="kicker">Code Evidence</p>
+        <h2>Concrete files for technical review.</h2>
+        <ul class="evidence-list">
+          <li><code>src/cwi_accountant/cli.py</code><br>Bootstrap, scan, watch, review, and reporting entrypoints.</li>
+          <li><code>src/cwi_accountant/db.py</code><br>SQLite document, queue, decision, duplicate, recurring, and audit state.</li>
+          <li><code>src/cwi_accountant/parsing/extractor.py</code><br>Field extraction, parse validity, and confidence logic.</li>
+          <li><code>src/cwi_accountant/workbook.py</code><br>Backup-first Excel writeback with formula/style preservation.</li>
+          <li><code>src/cwi_accountant/review_app.py</code><br>Streamlit human-review cockpit.</li>
+          <li><code>tests/test_autopost_policy.py</code><br>Policy-gated automation behavior under test.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="final">
+      <div class="section-inner">
+        <p class="kicker">Positioning</p>
+        <h2>Automation with accounting-grade caution.</h2>
+        <p>This project supports review hygiene and bookkeeping preparation. It does not claim tax/legal advice or fully autonomous accounting. Its value is in operational reliability: confidence gates, audit trails, backups, and humans where ambiguity matters.</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,10 +1,8 @@
 # CWI Accounting Agent
 
-Recruiter-facing project page: https://guy-c-jr.github.io/cwi-accounting-agent/
+https://guy-c-jr.github.io/cwi-accounting-agent/
 
 CWI Accounting Agent is a local-first accounting review system that turns document intake into confidence-scored review items, safe Excel workbook writeback, audit trails, duplicate detection, recurring bill review, and bookkeeping reports.
-
-## Why This Project Matters
 
 This repository is packaged as a public portfolio version of the local CWI accounting automation workspace. It emphasizes practical automation judgment:
 

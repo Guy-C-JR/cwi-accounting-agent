@@ -2,78 +2,88 @@
 
 https://guy-c-jr.github.io/cwi-accounting-agent/
 
-CWI Accounting Agent is a local-first accounting review system that turns document intake into confidence-scored review items, safe Excel workbook writeback, audit trails, duplicate detection, recurring bill review, and bookkeeping reports.
+CWI Accounting Agent is a local accounting automation tool that helps process invoices, receipts, bills, vendor documents, and other expense related files into a structured bookkeeping review workflow.
 
-This repository is packaged as a public portfolio version of the local CWI accounting automation workspace. It emphasizes practical automation judgment:
+The agent scans a local document folder, extracts accounting information, scores the confidence of extracted fields, flags uncertain records for review, detects possible duplicates, identifies recurring bills, and safely writes approved records into an Excel workbook with backups and audit history.
 
-- Python CLI workflow for bootstrap, backlog scan, watch mode, review, and report generation
-- Document parsing with confidence scoring and review gating
-- SQLite state for documents, decisions, duplicates, vendors, recurring candidates, and audit events
-- openpyxl workbook mutation with backups, formula/style preservation, and blind-overwrite refusal
-- Streamlit human-review cockpit for approval, edit, reject, duplicate, vendor, recurring, audit, and reports workflows
-- Tests around the safety-critical paths rather than only the happy path
+It is designed to reduce repetitive bookkeeping work while keeping final accounting decisions under human control.
 
-## Repository Map
+## Key Features
 
-- `src/cwi_accountant`: Python package for CLI, config, SQLite state, models, workbook writing, Streamlit app, parsing, services, and reporting.
-- `tests`: pytest coverage for queue behavior, extraction confidence, config resolution, duplicate detection, recurring detection, writeback, and auto-post policy.
-- `config/cwi_accountant.toml.example`: public configuration template with safe defaults.
-- `docs/case_study_assets`: portfolio notes and repository evidence appendix.
-- `site`: static GitHub Pages case study.
+* Local document intake for invoices, receipts, bills, and expense files
+* Backlog scanning for existing documents
+* Watch mode for newly added files
+* Accounting field extraction from documents
+* Confidence scoring for extracted records
+* Human review queue for uncertain or incomplete items
+* Approval, edit, rejection, and duplicate handling workflows
+* Duplicate detection using vendor, amount, date, file hash, and existing records
+* Recurring bill and repeated vendor payment detection
+* Safe Excel workbook writeback using `openpyxl`
+* Timestamped workbook backups before changes are made
+* Formula and formatting preservation where possible
+* SQLite based local state tracking
+* Audit logging for review decisions and system actions
+* Streamlit dashboard for reviewing pending items, duplicates, recurring candidates, reports, and audit events
+* Report generation from the local accounting database
+* Optional OCR support with `pytesseract`
 
-## Technical Highlights
+## How It Works
 
-### Local-First Review Workflow
+1. Add accounting documents to the configured intake folder.
+2. Run a scan or start watch mode.
+3. The agent extracts vendor, date, amount, category, and related accounting fields.
+4. Extracted records are scored for confidence.
+5. Low confidence, incomplete, unusual, duplicate, or recurring records are routed to review.
+6. A reviewer approves, edits, rejects, or marks records as duplicates.
+7. Approved records are posted to the configured Excel workbook.
+8. The system stores decisions, reports, backups, and audit events locally.
 
-- Backlog ingestion and continuous watcher entrypoints
-- File hash and manifest behavior for idempotent processing
-- Confidence-based routing into a human review queue
-- Review decisions stored in SQLite for auditability
+## Local First Design
 
-### Accountant-Safe Workbook Writeback
+CWI Accounting Agent is designed to run locally. Documents, workbook data, logs, reports, backups, and review decisions stay on the user’s machine by default.
 
-- Timestamped workbook backup before each write
-- Formula and style preservation by row-pattern copy
-- Canonical list validation before approval/write
-- Workbook duplicate checks and refusal to blindly overwrite posted rows
+This makes the tool suitable for accounting workflows where privacy, control, and traceability matter.
 
-### Conservative Automation
+## Tech Stack
 
-- Auto-post disabled by default
-- Vendor/category policies
-- Overall and critical-field confidence floors
-- Amount caps and receipt/payment/business-purpose requirements
-- Review fallback when policy gates do not pass
+* Python
+* Typer
+* Streamlit
+* SQLite
+* Pydantic
+* openpyxl
+* pandas
+* watchdog
+* pypdf
+* rapidfuzz
+* pytest
+* Optional OCR with `pytesseract`
 
-## Evidence Anchors
+## Repository Structure
 
-- CLI entrypoints: `src/cwi_accountant/cli.py`
-- SQLite state: `src/cwi_accountant/db.py`
-- Confidence extraction: `src/cwi_accountant/parsing/extractor.py`
-- Ingestion and policy gate: `src/cwi_accountant/services/ingestion.py`
-- Workbook safety: `src/cwi_accountant/workbook.py`
-- Duplicate/recurring workflows: `src/cwi_accountant/services/duplicate_service.py`, `src/cwi_accountant/services/recurring_service.py`
-- Streamlit cockpit: `src/cwi_accountant/review_app.py`
-- Reports: `src/cwi_accountant/reporting/reports.py`
-
-## Local Development
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -e .[dev]
-pytest -q
-```
-
-Run the CLI:
-
-```bash
-python -m cwi_accountant bootstrap
-python -m cwi_accountant scan-existing
-python -m cwi_accountant review-app
-```
-
-Copy `config/cwi_accountant.toml.example` to `config/cwi_accountant.toml` in a private local checkout before using real accounting paths. Do not commit workbooks, invoices, local databases, or private reports.
-
-This tool supports bookkeeping review hygiene. It does not provide legal or tax filing advice.
-
+```text
+cwi-accounting-agent/
+│
+├── config/
+│   └── cwi_accountant.toml.example
+│
+├── site/
+│   └── GitHub Pages site files
+│
+├── src/
+│   └── cwi_accountant/
+│       ├── cli.py
+│       ├── config.py
+│       ├── db.py
+│       ├── models.py
+│       ├── workbook.py
+│       ├── review_app.py
+│       ├── parsing/
+│       ├── reporting/
+│       └── services/
+│
+├── tests/
+├── pyproject.toml
+├── README.md
+└── .gitignore

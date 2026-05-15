@@ -75,9 +75,5 @@ python -m cwi_accountant review-app
 
 Copy `config/cwi_accountant.toml.example` to `config/cwi_accountant.toml` in a private local checkout before using real accounting paths. Do not commit workbooks, invoices, local databases, or private reports.
 
-## Portfolio Positioning
-
-The strongest claim for this project is not fully autonomous bookkeeping. The strongest claim is that it treats accounting writes as high-risk operations: ambiguous records go to humans, workbook mutations are backed up and audited, and automation only runs behind explicit policy gates.
-
 This tool supports bookkeeping review hygiene. It does not provide legal or tax filing advice.
 
